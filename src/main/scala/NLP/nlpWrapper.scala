@@ -3,6 +3,8 @@ package NLP
 import java.util.Properties
 import java.util.ArrayList
 
+import edu.stanford.nlp.ling.CoreAnnotations.LemmaAnnotation
+
 import scala.collection.JavaConversions._
 import edu.stanford.nlp.ling.{CoreLabel, CoreAnnotations}
 import edu.stanford.nlp.pipeline.{Annotation, StanfordCoreNLP}
@@ -51,7 +53,7 @@ case class nlpWrapper(annotators: String) {
     var nouns = Map[String, Int]()
     sentences.foreach(s => getTokens(s).foreach(x => {
       if (getTokenPOS(x).contains("NN"))
-        nouns = nouns + (getTokenText(x).toLowerCase -> {nouns.get(getTokenText(x).toLowerCase).getOrElse(0) +1} )
+        nouns = nouns + (getTokenLemma(x).toLowerCase -> {nouns.getOrElse(getTokenLemma(x).toLowerCase,0) +1} )
     }))
 
     nouns.filter({case (k,v) => v.asInstanceOf[Double]/sentences.size > threshold}).keySet.toList
@@ -60,6 +62,10 @@ case class nlpWrapper(annotators: String) {
   }
   def getTokenText(token:CoreLabel): String ={
     token.get(classOf[CoreAnnotations.TextAnnotation])
+  }
+
+  def getTokenLemma(token:CoreLabel) : String = {
+    token.get(classOf[LemmaAnnotation])
   }
 
   def getTokenPOS(token:CoreLabel): String ={
