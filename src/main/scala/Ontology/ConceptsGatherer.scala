@@ -19,7 +19,7 @@ case class ConceptsGatherer(category : String) {
   var relations : List[ConceptRelations] = null
   def extractRelations() : List[ConceptRelations] =
   {
-    val responseBody = Http("http://127.0.0.1:8084/data/5.3/c/en/" + category + "?limit=10000").option(HttpOptions.connTimeout(1000)).option(HttpOptions.readTimeout(5000)).asString.body.replaceAll("null", "\"null\"")
+    val responseBody = Http("http://127.0.0.1:8084/data/5.3/c/en/" + category + "?limit=10000").option(HttpOptions.connTimeout(10000)).option(HttpOptions.readTimeout(50000)).asString.body.replaceAll("null", "\"null\"")
     val parsedJson = Json.parse(responseBody)
     val modelJsonObject = parsedJson.validate[ConceptNetModel.ConceptNetEntry]
 

@@ -4,21 +4,15 @@
 
 
 import Ontology._
+import play.api.libs.json.Json
+import scalaj.http.{HttpOptions, Http}
+
 import NLP._
 object test extends App{
 
-
-  var x = nlpWrapper("tokenize, ssplit, pos, lemma")
-
-  var y = x.getSentences("asdasd I go to school by long and good battery life. kariem was good. school was great.")
-
-  //println(x.getTokenPOS(x.getTokens(y.get(0)).get(2)))
-  //x.getTokens(y(0)).foreach(k => {println(k + x.getTokenPOS(k))})
- // println(x.groupConsecuetiveNouns(y(0)))
-  //println(x.getTokensWithTag(y(0),"NP"))
-  val review = "I have so many phones and cameras"
-  println(x.getFrequentNouns(List(review), 0.1))
-
+  println(Http("http://localhost:9001/insertOntologyTree").
+    postData(Json.toJson(Constructor("phone").createOntologyTree()).toString()).
+    headers(Seq("content-Type" -> "text/plain")).asString)
 
 
 }

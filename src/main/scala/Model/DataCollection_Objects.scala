@@ -5,7 +5,7 @@ import play.api.libs.json.Json
 
 import scala.collection.mutable.Queue
 
-package object Model {
+package object DataCollectionModel {
 
   case class Product(codes: Map[String, String], name: String, categoryName: String = "DEFAULT", parentCategoryName: String = "")
 
@@ -28,9 +28,9 @@ package object Model {
   case class Question(question : String, answers : List[String], productCodes : Map[String, String])
   case class Related(C1 : Map[String, String], C2 : Map[String, String])
 
-  case class OntologyNode(var children : List[OntologyNode], var features : List[String], sentiment : Int)
+  case class OntologyNode(var children : List[OntologyNode], var features : List[String], var sentiment : Double)
 
-  case class OntologyTree(root : OntologyNode, codesID : String)
+  case class OntologyTree(var root : OntologyNode, category : String)
   {
     def getBFSNodes(): List[OntologyNode] =
     {
@@ -44,6 +44,28 @@ package object Model {
         nodes = nodes :+ node
       }
       nodes
+    }
+
+    def cutAtHeight(height : Int, node : OntologyNode = root): Unit =
+    {
+      if (node.children.isEmpty || height <1) return
+      if (height == 1) node.children = List()
+      else node.children.foreach(cutAtHeight(height -1, _))
+
+
+
+    }
+    def getTreeDepth(node : OntologyNode = root, acc: Int = 1) : Int =
+    {
+      if (node.children.isEmpty) return acc
+      node.children.map(x => getTreeDepth(x, acc + 1)).max
+    }
+
+    def aggregateSentiment(node : OntologyNode = root, depth : Int = getTreeDepth()): Double =
+    {
+      if (node.children.isEmpty) return node.sentiment * depth
+      node.sentiment = depth * node.sentiment + node.children.foldLeft(0.0){(a,b) => a + aggregateSentiment(b, depth-1)}
+      node.sentiment
     }
 
   }

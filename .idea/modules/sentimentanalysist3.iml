@@ -36,6 +36,17 @@
     <orderEntry type="library" name="SBT: org.joda:joda-convert:1.7:jar" level="project" />
     <orderEntry type="library" name="SBT: org.scala-lang:scala-reflect:2.11.5:jar" level="project" />
     <orderEntry type="library" name="SBT: org.scala-stm:scala-stm_2.11:0.7:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.scala-lang.modules:scala-parser-combinators_2.11:1.0.4:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.scala-lang.modules:scala-xml_2.11:1.0.4:jar" level="project" />
+    <orderEntry type="library" scope="TEST" name="SBT: org.scala-sbt:test-interface:1.0:jar" level="project" />
+    <orderEntry type="library" scope="TEST" name="SBT: org.scalacheck:scalacheck_2.11:1.11.4:jar" level="project" />
+    <orderEntry type="library" scope="TEST" name="SBT: org.scalaz:scalaz-concurrent_2.11:7.1.2:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.scalaz:scalaz-core_2.11:7.1.2:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.scalaz:scalaz-effect_2.11:7.1.2:jar" level="project" />
+    <orderEntry type="library" scope="TEST" name="SBT: org.scalaz:scalaz-iteratee_2.11:7.1.2:jar" level="project" />
+    <orderEntry type="library" scope="TEST" name="SBT: org.scalaz:scalaz-scalacheck-binding_2.11:7.1.2:jar" level="project" />
+    <orderEntry type="library" name="SBT: org.scalaz:scalaz-typelevel_2.11:7.1.2:jar" level="project" />
+    <orderEntry type="library" scope="TEST" name="SBT: org.scalaz:scalaz-xml_2.11:7.1.2:jar" level="project" />
     <orderEntry type="library" name="stanford-corenlp-3.5.2" level="project" />
     <orderEntry type="library" name="stanford-corenlp-3.5.2-models" level="project" />
   </component>

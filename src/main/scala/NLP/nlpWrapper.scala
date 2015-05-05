@@ -77,11 +77,11 @@ case class nlpWrapper(annotators: String) {
   }
 
   def getSentiment(token:CoreLabel): String ={
-    token.get(classOf[SentimentCoreAnnotations.ClassName])
+    token.get(classOf[SentimentCoreAnnotations.SentimentClass])
   }
 
   def getSentiment(Sentence:CoreMap): String ={
-    Sentence.get(classOf[SentimentCoreAnnotations.ClassName])
+    Sentence.get(classOf[SentimentCoreAnnotations.SentimentClass])
   }
 
   def getTokensWithTag(Sentence:CoreMap, tag:String): List[Tree] ={
