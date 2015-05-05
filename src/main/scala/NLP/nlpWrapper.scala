@@ -34,6 +34,30 @@ case class nlpWrapper(annotators: String) {
     sentences.toList
   }
 
+  def groupConsecuetiveNouns(sentence : CoreMap): List[List[CoreLabel]] =
+  {
+    var nouns = List[List[CoreLabel]]()
+    getTokens(sentence).foldLeft(List[CoreLabel]()){
+      (a,b) => if (getTokenPOS(b).contains("NN")) a :+ b
+        else {if (!a.isEmpty)nouns :+= a; List[CoreLabel]()}
+    }
+
+    nouns
+  }
+
+  def getFrequentNouns(texts : List[String], threshold : Double) : List[String] =
+  {
+    val sentences =  getSentences(texts.mkString(". "))
+    var nouns = Map[String, Int]()
+    sentences.foreach(s => getTokens(s).foreach(x => {
+      if (getTokenPOS(x).contains("NN"))
+        nouns = nouns + (getTokenText(x).toLowerCase -> {nouns.get(getTokenText(x).toLowerCase).getOrElse(0) +1} )
+    }))
+
+    nouns.filter({case (k,v) => v.asInstanceOf[Double]/sentences.size > threshold}).keySet.toList
+
+
+  }
   def getTokenText(token:CoreLabel): String ={
     token.get(classOf[CoreAnnotations.TextAnnotation])
   }
@@ -47,11 +71,11 @@ case class nlpWrapper(annotators: String) {
   }
 
   def getSentiment(token:CoreLabel): String ={
-    token.get(classOf[SentimentCoreAnnotations.SentimentClass])
+    token.get(classOf[SentimentCoreAnnotations.ClassName])
   }
 
   def getSentiment(Sentence:CoreMap): String ={
-    Sentence.get(classOf[SentimentCoreAnnotations.SentimentClass])
+    Sentence.get(classOf[SentimentCoreAnnotations.ClassName])
   }
 
   def getTokensWithTag(Sentence:CoreMap, tag:String): List[Tree] ={

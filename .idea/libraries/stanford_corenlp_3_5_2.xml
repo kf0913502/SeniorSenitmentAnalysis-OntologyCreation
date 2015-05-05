@@ -1,9 +1,13 @@
 <component name="libraryTable">
   <library name="stanford-corenlp-3.5.2">
     <CLASSES>
-      <root url="jar://$USER_HOME$/Downloads/stanford-corenlp-full-2015-04-20/stanford-corenlp-full-2015-04-20/stanford-corenlp-3.5.2.jar!/" />
+      <root url="jar://$USER_HOME$/Desktop/Library/current courses/senior II/Sentiment Analysis/stanford-corenlp-full-2015-01-29/stanford-corenlp-full-2015-01-29/stanford-corenlp-3.5.1.jar!/" />
     </CLASSES>
-    <JAVADOC />
-    <SOURCES />
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/Desktop/Library/current courses/senior II/Sentiment Analysis/stanford-corenlp-full-2015-01-29/stanford-corenlp-full-2015-01-29/stanford-corenlp-3.5.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/Desktop/Library/current courses/senior II/Sentiment Analysis/stanford-corenlp-full-2015-01-29/stanford-corenlp-full-2015-01-29/stanford-corenlp-3.5.1-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
