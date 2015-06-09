@@ -5,6 +5,8 @@ package Model
  */
 import play.api.libs.json.Json
 
+
+/*These are entities designed to contain information from ConceptNet. Since ConceptNet gives data in */
 package object ConceptNetModel
 {
 

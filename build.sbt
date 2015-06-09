@@ -13,6 +13,7 @@ libraryDependencies ++= {
     "org.scalaz" %% "scalaz-core" % "7.1.2",
     "org.scalaz" %% "scalaz-effect" % "7.1.2",
     "org.scalaz" %% "scalaz-typelevel" % "7.1.2",
-    "org.scalaz" %% "scalaz-scalacheck-binding" % "7.1.2" % "test"
+    "org.scalaz" %% "scalaz-scalacheck-binding" % "7.1.2" % "test",
+    "org.scala-lang.modules" %% "scala-pickling" % "0.10.1"
   )
 }

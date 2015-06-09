@@ -1,47 +1,79 @@
-package NLP
+package SentimentAnalysis
 
 import java.util.Properties
-import java.util.ArrayList
 
 import edu.stanford.nlp.ling.CoreAnnotations.LemmaAnnotation
-
-import scala.collection.JavaConversions._
-import edu.stanford.nlp.ling.{CoreLabel, CoreAnnotations}
+import edu.stanford.nlp.ling.{CoreAnnotations, CoreLabel}
 import edu.stanford.nlp.pipeline.{Annotation, StanfordCoreNLP}
 import edu.stanford.nlp.sentiment.SentimentCoreAnnotations
-import edu.stanford.nlp.trees.{TypedDependency, PennTreebankLanguagePack, TreebankLanguagePack, Tree}
 import edu.stanford.nlp.trees.TreeCoreAnnotations.TreeAnnotation
+import edu.stanford.nlp.trees.{PennTreebankLanguagePack, Tree, TreebankLanguagePack, TypedDependency}
 import edu.stanford.nlp.util.CoreMap
-import edu.stanford.nlp.parser.lexparser.LexicalizedParser
-
+import scala.collection.JavaConversions._
 /**
  * Created by abdelrazektarek on 5/2/15.
  */
+
+
 case class nlpWrapper(annotators: String) {
   val props: Properties = new Properties
   props.setProperty("annotators", annotators)
   val pipeline: StanfordCoreNLP = new StanfordCoreNLP(props)
-  val lp: LexicalizedParser = LexicalizedParser.loadModel("edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz")
+
+  def getTokenLemma(token:CoreLabel) : String = {
+    token.get(classOf[LemmaAnnotation])
+  }
+
 
   def getSentences(text: String): List[CoreMap] = {
     // create an empty Annotation just with the given text
-    val document: Annotation = new Annotation(text)
+    var document: Annotation = new Annotation(text)
 
     // run all Annotators on this text
     pipeline.annotate(document)
 
     // these are all the sentences in this document
     // a CoreMap is essentially a Map that uses class objects as keys and has values with custom types
-    val sentences: List[CoreMap] = document.get(classOf[CoreAnnotations.SentencesAnnotation]).toList
+    var sentences: List[CoreMap] = document.get(classOf[CoreAnnotations.SentencesAnnotation]).toList
+    document = null
+
     sentences.toList
+
   }
 
-  def groupConsecuetiveNouns(sentence : CoreMap): List[List[CoreLabel]] =
-  {
+  def removePunc(tokens: List[CoreLabel]): List[CoreLabel] ={
+    tokens.filter(!getTokenText(_).matches(("\\p{Punct}+")))
+  }
+
+  def groupConsecuetiveNouns(sentence: CoreMap): List[List[CoreLabel]] = {
     var nouns = List[List[CoreLabel]]()
-    getTokens(sentence).foldLeft(List[CoreLabel]()){
-      (a,b) => if (getTokenPOS(b).contains("NN")) a :+ b
-        else {if (!a.isEmpty)nouns :+= a; List[CoreLabel]()}
+    getTokens(sentence).foldLeft(List[CoreLabel]()) {
+      (a, b) => if (getTokenPOS(b).contains("NN")) a :+ b
+      else {
+        if (!a.isEmpty) nouns :+= a; List[CoreLabel]()
+      }
+    }
+    //println("nouns: "+nouns)
+    nouns
+  }
+
+  def groupConsecuetiveNounsIndexs(sentence: CoreMap): List[List[Int]] = {
+    //    val features = Map[String, List]
+    //    var nouns = List[List[Int]]()
+    //    getTokens(sentence).zipWithIndex.foldLeft(List[Int]()){
+    //      case (a,(value,index)) => if (getTokenPOS(value).contains("NN")) a :+ index
+    //      else {if (!a.isEmpty)nouns :+= a; List[Int]()}
+    //    }
+    var nouns = List[List[Int]]()
+    getTokens(sentence).zipWithIndex.foldLeft(List[Int]()) {
+      case (a, (value, index)) =>
+        if (getTokenPOS(value).contains("NN"))
+          a :+ index
+        else {
+          if (!a.isEmpty)
+            nouns :+= a;
+          List[Int]()
+        }
     }
 
     nouns
@@ -53,19 +85,16 @@ case class nlpWrapper(annotators: String) {
     var nouns = Map[String, Int]()
     sentences.foreach(s => getTokens(s).foreach(x => {
       if (getTokenPOS(x).contains("NN"))
-        nouns = nouns + (getTokenLemma(x).toLowerCase -> {nouns.getOrElse(getTokenLemma(x).toLowerCase,0) +1} )
+        nouns = nouns + (getTokenText(x).toLowerCase -> {nouns.get(getTokenText(x).toLowerCase).getOrElse(0) +1} )
     }))
 
     nouns.filter({case (k,v) => v.asInstanceOf[Double]/sentences.size > threshold}).keySet.toList
 
 
   }
+
   def getTokenText(token:CoreLabel): String ={
     token.get(classOf[CoreAnnotations.TextAnnotation])
-  }
-
-  def getTokenLemma(token:CoreLabel) : String = {
-    token.get(classOf[LemmaAnnotation])
   }
 
   def getTokenPOS(token:CoreLabel): String ={
@@ -85,7 +114,7 @@ case class nlpWrapper(annotators: String) {
   }
 
   def getTokensWithTag(Sentence:CoreMap, tag:String): List[Tree] ={
-    val parse: Tree = lp.apply(this.getTokens(Sentence))
+    val parse: Tree = Sentence.get(classOf[TreeAnnotation])
 
     var phraseList: List[Tree] = List()
     for ( subtree:Tree <- parse)
@@ -95,7 +124,7 @@ case class nlpWrapper(annotators: String) {
       {
 
         phraseList +:= (subtree)
-        println("Tree:\n"+subtree);
+        //println("Tree:\n"+subtree);
 
       }
     }
@@ -108,13 +137,18 @@ case class nlpWrapper(annotators: String) {
   }
 
   def getDependencies(Sentence:CoreMap): List[TypedDependency] ={
-    val tree: Tree = Sentence.get(classOf[TreeAnnotation])
+    var tree: Tree = Sentence.get(classOf[TreeAnnotation])
     // Get dependency tree
-    val tlp: TreebankLanguagePack = new PennTreebankLanguagePack()
-    val gsf = tlp.grammaticalStructureFactory
-    val gs = gsf.newGrammaticalStructure(tree)
-    val td = gs.typedDependenciesCollapsed
-    println("Dependencies:\n"+td)
+    var tlp: TreebankLanguagePack = new PennTreebankLanguagePack()
+    var gsf = tlp.grammaticalStructureFactory
+    var gs = gsf.newGrammaticalStructure(tree)
+    var td = gs.typedDependenciesCollapsed
+
+    tree = null
+    tlp = null
+    gsf = null
+    gs = null
+    //println("Dependencies:\n"+td)
     td.toList
   }
 

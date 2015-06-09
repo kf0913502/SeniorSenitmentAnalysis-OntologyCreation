@@ -10,11 +10,11 @@ case class CorpusGatherer(category : String) {
 
   def getCorpus(): List[String] =
   {
-    val responseBody = Http("http://127.0.0.1:9001/getAllProductsInCategory?name=" + category).option(HttpOptions.connTimeout(10000)).option(HttpOptions.readTimeout(50000)).asString.body
+    val responseBody = Http("http://127.0.0.1:9001/getAllProductsReviewsInCategory?category=" + category).option(HttpOptions.connTimeout(100000)).option(HttpOptions.readTimeout(500000)).asString.body.replaceAll(":null", ":\"null\"")
     val parsedJson = Json.parse(responseBody)
-    val modelJsonObject = parsedJson.validate[List[APPModel.Product]]
+    val modelJsonObject = parsedJson.validate[List[APPModel.CustomerReview]]
 
-    modelJsonObject.get.map(a => a.customerReviews.map(b => b.text)).flatten
+    modelJsonObject.get.map(a => a.text).take(1000)
   }
 
 
